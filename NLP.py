@@ -19,7 +19,7 @@ def tokens():
             lines.append(line)
     
 tokens()
-wordList=[]
+
 
 
 
@@ -35,7 +35,7 @@ def createMat(window):
 
     rowSet=sorted(set(rowSet))
 
-    wordList.append(rowSet)
+    
     for r in rowSet:
         if r ==' ':
             continue
@@ -49,6 +49,7 @@ def createMat(window):
 
 
 def makePairs(window):
+    wordList=[]
     for line in lines :
         splitLine=line.split()
         for i , word in enumerate(splitLine):
@@ -57,9 +58,10 @@ def makePairs(window):
                     wordList.append([word]+[splitLine[(i+1+w)]])
                 if i-w-1>=0:
                     wordList.append([word]+[splitLine[(i-w-1)]])
-def updateMat():
+    return wordList
+def updateMat(mat,wordList):
     for w in wordList:
-        print(mat[0].index(w[0]) ,mat[0].index(w[1]))
+       # print(mat[0].index(w[0]) ,mat[0].index(w[1]))
         i,j=mat[0].index(w[0]) ,mat[0].index(w[1])
         if isinstance(mat[i][j],int):
              mat[i][j]+=1
@@ -69,15 +71,22 @@ def updateMat():
   
 
 
-makePairs(2)    
-
-print(wordList)
+wordList2=makePairs(2)    
+ 
+print(len(wordList2))
+    
+mat2 =createMat(2)
 
     
-mat =createMat(2)
-for m in mat:
+updateMat(mat2,wordList2)
+for m in mat2:
     print(m)
+wordList5=makePairs(5)  
+
+print(len(wordList5))
+mat5 =createMat(5)
+
     
-updateMat()
-for m in mat:
+updateMat(mat5,wordList5)
+for m in mat5:
     print(m)
