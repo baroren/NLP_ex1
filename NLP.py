@@ -7,7 +7,7 @@ import numpy as np
 #line = re.sub(r"\w*[^\x00-\x7F]+\w*", "<UNK>", line)  # replace unknown names and phrases
 
 #consts :
-SAMPLESIZE=30
+SAMPLESIZE=5
 
 lines=[]
 
@@ -66,6 +66,7 @@ def co_occurrence( window_size):
 
     # formulate the dictionary into dataframe
     vocab = sorted(vocab) # sort vocab
+    print(len(vocab))
     df = pd.DataFrame(data=np.zeros((len(list(simlexList)), len(list(word))), dtype=np.int16),
                       index=list(simlexList),
                       columns=list(word))
@@ -74,31 +75,40 @@ def co_occurrence( window_size):
             df.loc[key[0], key[1]] = value
         if key[1] in df.index and key[0] in df.columns:
             df.at[key[1], key[0]] = value
-    return df
+    return df,len(vocab)
 
-def pmi(df, positive=True):
+def pmi(df, positive=True,corpSize=10):
     col_totals = df.sum(axis=0)
     total = col_totals.sum()
     row_totals = df.sum(axis=1)
   #  print(col_totals)
     expected = np.outer(row_totals, col_totals) / total
-    df = df / expected
+   
+
+   
     # Silence distracting warnings about log(0):
     with np.errstate(divide='ignore'):
-        df = np.log(df)
+        print(corpSize,len(df.index),len(df.columns))
+        df = df+2/(corpSize+2*len(df.index)*len(df.columns))/  expected
+        df.replace([np.inf, -np.inf], 0, inplace=True)
+        print (df)
+        df = np.log2(df)
+        print(df)
     df[np.isinf(df)] = 0.0  # log(0) = 0
+    df.replace([np.inf, -np.inf], 0, inplace=True)
+    
     if positive:
         df[df < 0] = 0.0
     return df
 
     
-df2= co_occurrence(2)
+df2,corpSize= co_occurrence(2)
 print (df2)
 ##df5= co_occurrence(5)
 #print (df5)
 
-#ppmi =pmi(df2)
-#print (ppmi)
+ppmi =pmi(df2,True,corpSize)
+print (ppmi)
 
 
 
